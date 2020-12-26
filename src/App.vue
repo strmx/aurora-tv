@@ -1,15 +1,114 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <HelloWorld msg="Welcome to Your Vue.js App" />
+  <ul>
+    <li
+      v-for="(item, index) in items"
+      :key="index"
+      class="item"
+      :style="{
+        left: item.left,
+        top: item.top,
+        width: item.width,
+        height: item.height
+      }"
+    >
+      <img alt="poster" class="item__image" :src="item.video.poster" />
+    </li>
+  </ul>
+  <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
 </template>
 
 <script>
-import HelloWorld from "./components/HelloWorld.vue";
+function generateLayouts(itemCount) {
+  const layouts = [];
+  for (let colCount = 0; colCount < 1000; colCount++) {
+    for (let rowCount = 0; rowCount < 1000; rowCount++) {
+      const cellCount = colCount * rowCount;
+      if (cellCount < itemCount) continue;
+      if (cellCount > itemCount + colCount - 1) break;
+      if (cellCount > itemCount + rowCount - 1) break;
+      layouts.push({ colCount, rowCount });
+    }
+  }
+  return layouts;
+}
+
+function generateItems(items, windowWidth, windowHeight) {
+  const wRatio = 1 / 1;
+  const itemCount = items.length;
+  const layouts = generateLayouts(itemCount);
+  const ratios = layouts.map(
+    ({ colCount, rowCount }) =>
+      windowWidth / colCount / (windowHeight / rowCount)
+  );
+  const ratioDiffs = ratios.map(r => Math.abs(wRatio - r));
+  const MIN_GAP = 8;
+  const bestRatioDiff = Math.min(...ratioDiffs);
+  const bestLayoutIndex = ratioDiffs.indexOf(bestRatioDiff);
+  const { colCount, rowCount } = layouts[bestLayoutIndex];
+  const itemWidth = windowWidth / colCount;
+  const itemHeight = windowHeight / rowCount;
+  const res = [];
+
+  for (let row = 0; row < rowCount; row++) {
+    for (let col = 0; col < colCount; col++) {
+      if (row * colCount + col < itemCount) {
+        const size = Math.round(Math.min(itemWidth, itemHeight) - MIN_GAP);
+        const x = col * itemWidth;
+        const y = row * itemHeight;
+        const itemIndex = row * colCount + col;
+        const item = items[itemIndex];
+        res.push({
+          video: item,
+          left: `${Math.round(x + (itemWidth - size) / 2)}px`,
+          top: `${Math.round(y + (itemHeight - size) / 2)}px`,
+          width: `${size}px`,
+          height: `${size}px`
+        });
+      }
+    }
+  }
+
+  return res;
+}
+
+// import HelloWorld from "./components/HelloWorld.vue";
 
 export default {
   name: "App",
-  components: {
-    HelloWorld
+  components: {},
+  data() {
+    return {
+      videos: Array(10).fill({
+        poster: "https://source.unsplash.com/random"
+      }),
+      items: []
+    };
+  },
+  methods: {
+    // eslint-disable-next-line no-unused-vars
+    updateItems(event) {
+      this.items = generateItems(
+        this.videos,
+        document.documentElement.clientWidth,
+        document.documentElement.clientHeight
+      );
+      console.log(this.items);
+    }
+  },
+  mounted() {
+    this.$nextTick(function() {
+      window.addEventListener("resize", this.updateItems);
+
+      //Init
+      this.updateItems();
+    });
+
+    setInterval(() => {
+      this.counter++;
+    }, 1000);
+  },
+  beforeUnmount() {
+    window.removeEventListener("resize", this.updateItems);
   }
 };
 </script>
@@ -19,8 +118,15 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+}
+
+.item {
+  position: fixed;
+  overflow: hidden;
+  border-radius: 50%;
+}
+
+.item__image {
+  width: 100%;
 }
 </style>
