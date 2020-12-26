@@ -8,10 +8,11 @@
         left: item.left,
         top: item.top,
         width: item.width,
-        height: item.height
+        height: item.height,
+        backgroundImage: `url(${item.video.poster})`
       }"
     >
-      <img alt="poster" class="item__image" :src="item.video.poster" />
+      <!-- <img alt="poster" class="item__image" :src="item.video.poster" /> -->
     </li>
   </ul>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
@@ -41,12 +42,12 @@ function generateItems(items, windowWidth, windowHeight) {
       windowWidth / colCount / (windowHeight / rowCount)
   );
   const ratioDiffs = ratios.map(r => Math.abs(wRatio - r));
-  const MIN_GAP = 8;
   const bestRatioDiff = Math.min(...ratioDiffs);
   const bestLayoutIndex = ratioDiffs.indexOf(bestRatioDiff);
   const { colCount, rowCount } = layouts[bestLayoutIndex];
   const itemWidth = windowWidth / colCount;
   const itemHeight = windowHeight / rowCount;
+  const MIN_GAP = Math.round(Math.min(itemWidth, itemHeight) * 0.2);
   const res = [];
 
   for (let row = 0; row < rowCount; row++) {
@@ -78,7 +79,7 @@ export default {
   components: {},
   data() {
     return {
-      videos: Array(10).fill({
+      videos: Array(100).fill({
         poster: "https://source.unsplash.com/random"
       }),
       items: []
@@ -122,8 +123,13 @@ export default {
 
 .item {
   position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
   border-radius: 50%;
+  background-position: center;
+  background-size: cover;
 }
 
 .item__image {
