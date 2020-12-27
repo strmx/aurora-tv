@@ -9,7 +9,7 @@
         top: item.top,
         width: item.width,
         height: item.height,
-        backgroundImage: `url(${item.video.poster})`
+        backgroundImage: `url(${item.data.poster})`
       }"
     >
       <!-- <img alt="poster" class="item__image" :src="item.video.poster" /> -->
@@ -33,9 +33,9 @@ function generateLayouts(itemCount) {
   return layouts;
 }
 
-function generateItems(items, windowWidth, windowHeight) {
+function generateItems(data, windowWidth, windowHeight) {
   const wRatio = 1 / 1;
-  const itemCount = items.length;
+  const itemCount = data.length;
   const layouts = generateLayouts(itemCount);
   const ratios = layouts.map(
     ({ colCount, rowCount }) =>
@@ -56,10 +56,10 @@ function generateItems(items, windowWidth, windowHeight) {
         const size = Math.round(Math.min(itemWidth, itemHeight) - MIN_GAP);
         const x = col * itemWidth;
         const y = row * itemHeight;
-        const itemIndex = row * colCount + col;
-        const item = items[itemIndex];
+        const dataIndex = row * colCount + col;
+        const dataItem = data[dataIndex];
         res.push({
-          video: item,
+          data: dataItem,
           left: `${Math.round(x + (itemWidth - size) / 2)}px`,
           top: `${Math.round(y + (itemHeight - size) / 2)}px`,
           width: `${size}px`,
@@ -79,34 +79,33 @@ export default {
   components: {},
   data() {
     return {
-      videos: Array(100).fill({
-        poster: "https://source.unsplash.com/random"
-      }),
+      // data: Array(10).fill({ poster: "https://source.unsplash.com/random" }),
+      data: [],
       items: []
     };
   },
   methods: {
     // eslint-disable-next-line no-unused-vars
     updateItems(event) {
+      if (!this.data || !this.data.length) return;
+
       this.items = generateItems(
-        this.videos,
+        this.data,
         document.documentElement.clientWidth,
         document.documentElement.clientHeight
       );
-      console.log(this.items);
     }
   },
   mounted() {
     this.$nextTick(function() {
       window.addEventListener("resize", this.updateItems);
-
-      //Init
-      this.updateItems();
     });
-
-    setInterval(() => {
-      this.counter++;
-    }, 1000);
+    fetch("http://localhost:8888/data.json")
+      .then(response => response.json())
+      .then(data => {
+        this.data = data.data;
+        this.updateItems();
+      });
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.updateItems);
