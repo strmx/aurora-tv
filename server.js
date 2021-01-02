@@ -3,10 +3,12 @@ const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8888;
 
+app.use(express.static("dist"));
+
 app.get("*data.json", async (req, res) => {
   const content = {
     data: Array(10).fill({
-      poster: "https://source.unsplash.com/random",
+      poster: "/img/IMG_3498.jpg",
       // base url is /public
       video:
         "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"

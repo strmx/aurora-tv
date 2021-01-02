@@ -17,8 +17,8 @@
     </li>
   </ul>
   <div class="video-container" v-if="selectedVideoUrl" @click="onVideoClick()">
-    <video class="video" autoplay @ended="onVideoEnded()">
-      <source :src="selectedVideoUrl" type="video/mp4">
+    <video class="video" autoplay @ended="onVideoEnded()" playsinline>
+      <source :src="selectedVideoUrl" type="video/mp4" />
       Your browser does not support the video tag.
     </video>
   </div>
@@ -118,12 +118,13 @@ export default {
     this.$nextTick(function() {
       window.addEventListener("resize", this.updateItems);
     });
-    fetch("http://localhost:8888/data.json")
+    fetch(`${location.protocol}//${location.hostname}:8888/data.json`)
       .then(response => response.json())
       .then(data => {
         this.data = data.data;
         this.updateItems();
-      });
+      })
+      .catch(err => alert(err));
   },
   beforeUnmount() {
     window.removeEventListener("resize", this.updateItems);
@@ -162,7 +163,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(0, 0, 0, 0.97);
+  background-color: rgba(0, 0, 0, 0.9);
 }
 
 .video {
