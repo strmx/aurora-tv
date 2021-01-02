@@ -5,7 +5,12 @@ const PORT = process.env.PORT || 8888;
 
 app.get("*data.json", async (req, res) => {
   const content = {
-    data: Array(10).fill({ poster: "https://source.unsplash.com/random" })
+    data: Array(10).fill({
+      poster: "https://source.unsplash.com/random",
+      // base url is /public
+      video:
+        "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
+    })
   };
 
   res.set({

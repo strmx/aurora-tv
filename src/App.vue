@@ -3,6 +3,7 @@
     <li
       v-for="(item, index) in items"
       :key="index"
+      @click="onItemClick(item)"
       class="item"
       :style="{
         left: item.left,
@@ -15,6 +16,12 @@
       <!-- <img alt="poster" class="item__image" :src="item.video.poster" /> -->
     </li>
   </ul>
+  <div class="video-container" v-if="selectedVideoUrl" @click="onVideoClick()">
+    <video class="video" autoplay @ended="onVideoEnded()">
+      <source :src="selectedVideoUrl" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
   <!-- <HelloWorld msg="Welcome to Your Vue.js App" /> -->
 </template>
 
@@ -81,7 +88,8 @@ export default {
     return {
       // data: Array(10).fill({ poster: "https://source.unsplash.com/random" }),
       data: [],
-      items: []
+      items: [],
+      selectedVideoUrl: null
     };
   },
   methods: {
@@ -94,6 +102,16 @@ export default {
         document.documentElement.clientWidth,
         document.documentElement.clientHeight
       );
+    },
+    onItemClick(item) {
+      console.log(item.data.video);
+      this.selectedVideoUrl = item.data.video;
+    },
+    onVideoClick() {
+      this.selectedVideoUrl = null;
+    },
+    onVideoEnded() {
+      this.selectedVideoUrl = null;
     }
   },
   mounted() {
@@ -133,5 +151,23 @@ export default {
 
 .item__image {
   width: 100%;
+}
+
+.video-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.97);
+}
+
+.video {
+  max-width: 100%;
+  min-width: 90%;
+  max-height: 100%;
 }
 </style>
