@@ -1,18 +1,20 @@
-const express = require("express");
+const ITEMS_DIR = "./public/items";
+const fs = require("fs");
 
+const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8888;
 
 app.use(express.static("dist"));
 
 app.get("*data.json", async (req, res) => {
+  const files = fs.readdirSync(ITEMS_DIR);
+  const videos = files.filter(f => f.endsWith(".mp4"));
   const content = {
-    data: Array(10).fill({
-      poster: "/img/IMG_3498.jpg",
-      // base url is /public
-      video:
-        "https://www.learningcontainer.com/wp-content/uploads/2020/05/sample-mp4-file.mp4"
-    })
+    data: videos.map(v => ({
+      poster: `items/${v}.jpg`,
+      video: `items/${v}`
+    }))
   };
 
   res.set({
