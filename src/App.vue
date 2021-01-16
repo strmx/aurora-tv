@@ -17,6 +17,12 @@
     </li>
   </ul>
   <div class="video-container" v-if="selectedVideoUrl" @click="onVideoClick()">
+    <a
+      class="video__close-button"
+      @click="onCloseClick()"
+      :class="{ 'video__close-button--focus': videoEnded }"
+      >❌</a
+    >
     <video class="video" autoplay @ended="onVideoEnded()" playsinline>
       <source :src="selectedVideoUrl" type="video/mp4" />
       Your browser does not support the video tag.
@@ -89,7 +95,8 @@ export default {
       // data: Array(10).fill({ poster: "https://source.unsplash.com/random" }),
       data: [],
       items: [],
-      selectedVideoUrl: null
+      selectedVideoUrl: null,
+      videoEnded: false
     };
   },
   methods: {
@@ -106,11 +113,15 @@ export default {
     onItemClick(item) {
       console.log(item.data.video);
       this.selectedVideoUrl = item.data.video;
+      this.videoEnded = false;
     },
     onVideoClick() {
       this.selectedVideoUrl = null;
     },
     onVideoEnded() {
+      this.videoEnded = true;
+    },
+    onCloseClick() {
       this.selectedVideoUrl = null;
     }
   },
@@ -174,5 +185,16 @@ body {
   max-width: 100%;
   min-width: 90%;
   max-height: 100%;
+}
+.video__close-button {
+  position: absolute;
+  right: 10%;
+  top: 10%;
+  font-size: 2vw;
+  opacity: 0.25;
+  z-index: 1;
+}
+.video__close-button--focus {
+  opacity: 1;
 }
 </style>
