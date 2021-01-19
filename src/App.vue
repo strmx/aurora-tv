@@ -116,10 +116,11 @@ export default {
       this.videoEnded = false;
     },
     onVideoClick() {
-      this.selectedVideoUrl = null;
+      // this.selectedVideoUrl = null;
     },
     onVideoEnded() {
       this.videoEnded = true;
+      this.selectedVideoUrl = null;
     },
     onCloseClick() {
       this.selectedVideoUrl = null;
@@ -188,10 +189,10 @@ body {
 }
 .video__close-button {
   position: absolute;
-  right: 10%;
-  top: 10%;
-  font-size: 2vw;
-  opacity: 0.25;
+  right: 5%;
+  top: 5%;
+  font-size: 8vw;
+  opacity: 0.5;
   z-index: 1;
 }
 .video__close-button--focus {
